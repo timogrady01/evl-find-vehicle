@@ -1,0 +1,7 @@
+echo "# evl-find-vehicle" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/timogrady01/evl-find-vehicle.git
+git push -u origin main
