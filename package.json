@@ -1,0 +1,21 @@
+{
+  "name": "evl-find-vehicle",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5173"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "tailwindcss": "^3.4.10",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20"
+  }
+}
