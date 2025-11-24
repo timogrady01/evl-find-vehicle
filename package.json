@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "evl-frontend",
   "version": "1.0.0",
   "private": true,
@@ -20,5 +21,25 @@
     "tailwindcss": "^3.4.18",
     "typescript": "^5.0.0",
     "vite": "^4.0.0"
+=======
+  "name": "evl-find-vehicle",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5173"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "tailwindcss": "^3.4.10",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20"
+>>>>>>> b7d10d640edb93ab8e36a8721422c0a9fff70e57
   }
 }
