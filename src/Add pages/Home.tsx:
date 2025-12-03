@@ -1,33 +1,109 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
+import { fetchMakes, fetchModels, fetchTrims } from "../services/carApi";
 import { vehicles } from "../data/vehicles";
 
 export default function Home() {
-  const [query, setQuery] = useState("");
-  const [makeFilter, setMakeFilter] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [sortOption, setSortOption] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [results, setResults] = useState(vehicles);
+  const [makes, setMakes] = useState([]);
+  const [models, setModels] = useState([]);
+  const [trims, setTrims] = useState([]);
+  const [selectedTrim, setSelectedTrim] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  const filteredVehicles = vehicles
-    .filter(v =>
-      `${v.make} ${v.model} ${v.trim}`.toLowerCase().includes(query.toLowerCase())
-    )
-    .filter(v => (makeFilter ? v.make === makeFilter : true))
-    .filter(v => (yearFilter ? v.year.toString() === yearFilter : true))
-    .filter(v => {
-      const priceNum = parseInt(v.price.replace(/\$|,/g, ""));
-      const min = minPrice ? parseInt(minPrice) : 0;
-      const max = maxPrice ? parseInt(maxPrice) : Infinity;
-      return priceNum >= min && priceNum <= max;
+  // Load makes from CarAPI
+  useEffect(() => {
+    setLoading(true);
+    fetchMakes().then(data => {
+      setMakes(data);
+      setLoading(false);
     });
+  }, []);
 
-  if (sortOption === "price") {
-    filteredVehicles.sort((a, b) =>
-      parseInt(a.price.replace(/\$|,/g, "")) - parseInt(b.price.replace(/\$|,/g, ""))
+  const handleSearch = (query: string) => {
+    const filtered = vehicles.filter(v =>
+      `${v.make} ${v.model} ${v.trim}`.toLowerCase().includes(query.toLowerCase())
     );
-  } else if (sortOption === "year") {
+    setResults(filtered);
+  };
+
+  const handleMakeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const makeId = parseInt(e.target.value);
+    setModels([]);
+    setTrims([]);
+    setSelectedTrim(null);
+    setLoading(true);
+    const data = await fetchModels(makeId);
+    setModels(data);
+    setLoading(false);
+  };
+
+  const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const modelId = parseInt(e.target.value);
+    setTrims([]);
+    setSelectedTrim(null);
+    setLoading(true);
+    const data = await fetchTrims(modelId);
+    setTrims(data);
+    setLoading(false);
+  };
+
+  const handleTrimChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const trimId = parseInt(e.target.value);
+    const trim = trims.find((t: any) => t.id === trimId);
+    setSelectedTrim(trim);
+  };
+
+  return (
+    <div className="min-h-screen p-6 bg-gray-100">
+      <h1 className="text-4xl font-bold text-blue-600 text-center">
+        EVL Vehicle Locator
+      </h1>
+
+      {/* Search Bar */}
+      <SearchBar onSearch={handleSearch} />
+
+      {/* Dynamic Dropdowns */}
+      <div className="flex flex-wrap justify-center gap-4 mt-6">
+        <select onChange={handleMakeChange} className="px-4 py-2 border rounded-lg">
+          <option value="">Choose Make</option>
+          {makes.map((make: any) => (
+            <option key={make.id} value={make.id}>{make.name}</option>
+          ))}
+        </select>
+
+        {models.length > 0 && (
+          <select onChange={handleModelChange} className="px-4 py-2 border rounded-lg">
+            <option value="">Choose Model</option>
+            {models.map((model: any) => (
+              <option key={model.id} value={model.id}>{model.name}</option>
+            ))}
+          </select>
+        )}
+
+        {trims.length > 0 && (
+          <select onChange={handleTrimChange} className="px-4 py-2 border rounded-lg">
+            <option value="">Choose Trim</option>
+            {trims.map((trim: any) => (
+              <option key={trim.id} value={trim.id}>{trim.name}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {loading && <p className="text-center text-gray-500 mt-4">Loading...</p>}
+
+      {/* Vehicle Details Card */}
+      {selectedTrim && (
+        <div className="max-w-md mx-auto mt-6 bg-white rounded-lg shadow p-4">
+          {selectedTrim.image && (
+            <img
+              src={selectedTrim.image}
+              alt={selectedTrim.name}
+              className="w-full h-48 object-cover rounded mb-4"
+            />
+          )}
+          <h2 className="text-xl font-bold text-blue-600">{selectedTrim.name}</h2>
+          <p className="text-gray-700">Year: {selectedTrim.year}</p>
+          <p className="text-gray-700">MSRP: {selectedTrim.msrp ? `$${selectedTrim.msrp}` : "N/A"}</p>
