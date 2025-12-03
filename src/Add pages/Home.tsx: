@@ -9,17 +9,27 @@ export default function Home() {
   const [filteredTrims, setFilteredTrims] = useState([]);
   const [selectedTrim, setSelectedTrim] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [trimSearch, setTrimSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   useEffect(() => {
-    setLoading(true);
-    fetchMakes().then(data => {
-      setMakes(data);
-      setLoading(false);
-    });
+    loadMakes();
   }, []);
+
+  const loadMakes = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await fetchMakes();
+      setMakes(data);
+    } catch (err) {
+      setError("Failed to load makes. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleMakeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const makeId = parseInt(e.target.value);
@@ -27,10 +37,16 @@ export default function Home() {
     setTrims([]);
     setFilteredTrims([]);
     setSelectedTrim(null);
-    setLoading(true);
-    const data = await fetchModels(makeId);
-    setModels(data);
-    setLoading(false);
+    try {
+      setLoading(true);
+      setError("");
+      const data = await fetchModels(makeId);
+      setModels(data);
+    } catch (err) {
+      setError("Failed to load models. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -38,137 +54,16 @@ export default function Home() {
     setTrims([]);
     setFilteredTrims([]);
     setSelectedTrim(null);
-    setLoading(true);
-    const data = await fetchTrims(modelId);
-    setTrims(data);
-    setFilteredTrims(data);
-    setLoading(false);
+    try {
+      setLoading(true);
+      setError("");
+      const data = await fetchTrims(modelId);
+      setTrims(data);
+      setFilteredTrims(data);
+    } catch (err) {
+      setError("Failed to load trims. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleTrimClick = (trim: any) => {
-    setSelectedTrim(trim);
-  };
-
-  const handleTrimSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value.toLowerCase();
-    setTrimSearch(query);
-    const filtered = trims.filter(t => t.name.toLowerCase().includes(query));
-    setFilteredTrims(filtered);
-    setCurrentPage(1);
-  };
-
-  const totalPages = Math.ceil(filteredTrims.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedTrims = filteredTrims.slice(startIndex, startIndex + itemsPerPage);
-
-  return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600 text-center">
-        EVL Vehicle Locator
-      </h1>
-
-      {/* Dropdowns */}
-      <div className="flex flex-wrap justify-center gap-4 mt-6">
-        <select onChange={handleMakeChange} className="px-4 py-2 border rounded-lg">
-          <option value="">Choose Make</option>
-          {makes.map((make: any) => (
-            <option key={make.id} value={make.id}>{make.name}</option>
-          ))}
-        </select>
-
-        {models.length > 0 && (
-          <select onChange={handleModelChange} className="px-4 py-2 border rounded-lg">
-            <option value="">Choose Model</option>
-            {models.map((model: any) => (
-              <option key={model.id} value={model.id}>{model.name}</option>
-            ))}
-          </select>
-        )}
-      </div>
-
-      {loading && <p className="text-center text-gray-500 mt-4">Loading...</p>}
-
-      {/* Trim Search */}
-      {filteredTrims.length > 0 && (
-        <div className="max-w-md mx-auto mt-4">
-          <input
-            type="text"
-            placeholder="Search trims..."
-            value={trimSearch}
-            onChange={handleTrimSearch}
-            className="w-full px-4 py-2 border rounded-lg"
-          />
-        </div>
-      )}
-
-      {/* Dynamic Grid of Trims */}
-      {paginatedTrims.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          {paginatedTrims.map(trim => (
-            <div
-              key={trim.id}
-              onClick={() => handleTrimClick(trim)}
-              className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer"
-            >
-              {trim.image && (
-                <img
-                  src={trim.image}
-                  alt={trim.name}
-                  className="w-full h-48 object-cover rounded mb-2"
-                />
-              )}
-              <h2 className="font-bold text-lg">{trim.name}</h2>
-              <p className="text-gray-600">Year: {trim.year}</p>
-              <p className="text-blue-600 font-semibold">
-                MSRP: {trim.msrp ? `$${trim.msrp}` : "N/A"}
-              </p>
-              <p className="text-gray-500">{trim.body_type || "N/A"}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6 gap-2">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Vehicle Details Card */}
-      {selectedTrim && (
-        <div className="max-w-md mx-auto mt-6 bg-white rounded-lg shadow p-4">
-          {selectedTrim.image && (
-            <img
-              src={selectedTrim.image}
-              alt={selectedTrim.name}
-              className="w-full h-48 object-cover rounded mb-4"
-            />
-          )}
-          <h2 className="text-xl font-bold text-blue-600">{selectedTrim.name}</h2>
-          <p className="text-gray-700">Year: {selectedTrim.year}</p>
-          <p className="text-gray-700">MSRP: {selectedTrim.msrp ? `$${selectedTrim.msrp}` : "N/A"}</p>
-          <p className="text-gray-500">Body: {selectedTrim.body_type || "N/A"}</p>
-          <hr className="my-2" />
-          <h3 className="font-semibold text-gray-800">Specs:</h3>
-          <ul className="text-gray-600 list-disc pl-5">
-            <li>Engine: {selectedTrim.engine || "N/A"}</li>
-            <li>Transmission: {selectedTrim.transmission || "N/A"}</li>
-            <li>Fuel Economy: {selectedTrim.fuel_economy || "N/A"}</li>
-            <li>Drive Type: {selectedTrim.drive_type || "N/A"}</li>
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-}
