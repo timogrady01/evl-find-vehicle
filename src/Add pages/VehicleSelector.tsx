@@ -8,6 +8,7 @@ export default function VehicleSelector() {
   const [trims, setTrims] = useState([]);
   const [selectedMake, setSelectedMake] = useState<number | null>(null);
   const [selectedModel, setSelectedModel] = useState<number | null>(null);
+  const [selectedTrim, setSelectedTrim] = useState<any>(null);
 
   useEffect(() => {
     fetchMakes().then(data => setMakes(data));
@@ -18,6 +19,7 @@ export default function VehicleSelector() {
     setSelectedMake(makeId);
     setModels([]);
     setTrims([]);
+    setSelectedTrim(null);
     fetchModels(makeId).then(data => setModels(data));
   };
 
@@ -25,7 +27,14 @@ export default function VehicleSelector() {
     const modelId = parseInt(e.target.value);
     setSelectedModel(modelId);
     setTrims([]);
+    setSelectedTrim(null);
     fetchTrims(modelId).then(data => setTrims(data));
+  };
+
+  const handleTrimChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const trimId = parseInt(e.target.value);
+    const trim = trims.find((t: any) => t.id === trimId);
+    setSelectedTrim(trim);
   };
 
   return (
@@ -55,7 +64,7 @@ export default function VehicleSelector() {
 
         {/* Trims Dropdown */}
         {trims.length > 0 && (
-          <select className="px-4 py-2 border rounded-lg">
+          <select onChange={handleTrimChange} className="px-4 py-2 border rounded-lg">
             <option value="">Choose Trim</option>
             {trims.map((trim: any) => (
               <option key={trim.id} value={trim.id}>{trim.name}</option>
@@ -63,6 +72,16 @@ export default function VehicleSelector() {
           </select>
         )}
       </div>
+
+      {/* Vehicle Details Card */}
+      {selectedTrim && (
+        <div className="max-w-md mx-auto mt-6 bg-white rounded-lg shadow p-4">
+          <h2 className="text-xl font-bold text-blue-600">{selectedTrim.name}</h2>
+          <p className="text-gray-700">Year: {selectedTrim.year}</p>
+          <p className="text-gray-700">MSRP: {selectedTrim.msrp ? `$${selectedTrim.msrp}` : "N/A"}</p>
+          <p className="text-gray-500">Body: {selectedTrim.body_type || "N/A"}</p>
+        </div>
+      )}
     </div>
   );
 }
