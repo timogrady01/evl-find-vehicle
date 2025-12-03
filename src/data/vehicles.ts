@@ -1,19 +1,58 @@
 
 export const vehicles = [
-  { id: 1, make: "Toyota", model: "Camry", trim: "XSE", year: 2024 },
-  { id: 2, make: "Toyota", model: "RAV4", trim: "Limited", year: 2023 },
-  { id: 3, make: "Honda", model: "Accord", trim: "Sport", year: 2024 },
-  { id: 4, make: "Honda", model: "CR-V", trim: "EX-L", year: 2023 },
-  { id: 5, make: "Ford", model: "F-150", trim: "Lariat", year: 2023 },
-  { id: 6, make: "Ford", model: "Explorer", trim: "Platinum", year: 2024 },
-  { id: 7, make: "Chevrolet", model: "Silverado", trim: "LTZ", year: 2023 },
-  { id: 8, make: "Chevrolet", model: "Tahoe", trim: "Premier", year: 2024 },
-  { id: 9, make: "Tesla", model: "Model 3", trim: "Performance", year: 2024 },
-  { id: 10, make: "Tesla", model: "Model Y", trim: "Long Range", year: 2024 },
-  { id: 11, make: "BMW", model: "X5", trim: "M Sport", year: 2024 },
-  { id: 12, make: "BMW", model: "3 Series", trim: "330i", year: 2023 },
-  { id: 13, make: "Mercedes-Benz", model: "C-Class", trim: "C300", year: 2024 },
-  { id: 14, make: "Mercedes-Benz", model: "GLE", trim: "450 4MATIC", year: 2023 },
-  { id: 15, make: "Audi", model: "Q5", trim: "Premium Plus", year: 2024 },
-  { id: 16, make: "Audi", model: "A6", trim: "Prestige", year: 2023 },
-  { id: 17, make: "Hyundai", model: "Santa Fe", trim: "Calligraphy", year: 2024 },
+  {
+    id: 1,
+    make: "Toyota",
+    model: "Camry",
+    trim: "XSE",
+    year: 2024,
+    price: "$32,000",
+    image: "https://cdn.motor1.com/images/mgl/0ANJk/s3/2024-toyota-camry.jpg"
+  },
+  {
+    id: 2,
+    make: "Toyota",
+    model: "RAV4",
+    trim: "Limited",
+    year: 2023,
+    price: "$36,500",
+    image: "https://cdn.motor1.com/images/mgl/0ANJk/s3/2023-toyota-rav4.jpg"
+  },
+  {
+    id: 3,
+    make: "Honda",
+    model: "Accord",
+    trim: "Sport",
+    year: 2024,
+    price: "$31,000",
+    image: "https://cdn.motor1.com/images/mgl/0ANJk/s3/2024-honda-accord.jpg"
+  },
+  {
+    id: 4,
+    make: "Honda",
+    model: "CR-V",
+    trim: "EX-L",
+    year: 2023,
+    price: "$34,000",
+    image: "https://cdn.motor1.com/images/mgl/0ANJk/s3/2023-honda-crv.jpg"
+  },
+  {
+    id: 5,
+    make: "Ford",
+    model: "F-150",
+    trim: "Lariat",
+    year: 2023,
+    price: "$58,000",
+    image: "https://cdn.motor1.com/images/mgl/0ANJk/s3/2023-ford-f150.jpg"
+  },
+  {
+    id: 6,
+    make: "Tesla",
+    model: "Model 3",
+    trim: "Performance",
+    year: 2024,
+    price: "$54,990",
+    image: "https://cdn.motor1.com/images/mgl/0ANJk/s3/2024-tesla-model3.jpg"
+  },
+  // Add more vehicles as needed...
+];
