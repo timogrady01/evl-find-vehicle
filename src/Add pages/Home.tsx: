@@ -5,12 +5,37 @@ import { vehicles } from "../data/vehicles";
 
 export default function Home() {
   const [results, setResults] = useState(vehicles);
+  const [makeFilter, setMakeFilter] = useState("");
+  const [sortOption, setSortOption] = useState("");
 
   const handleSearch = (query: string) => {
-    const filtered = vehicles.filter(v =>
+    let filtered = vehicles.filter(v =>
       `${v.make} ${v.model} ${v.trim}`.toLowerCase().includes(query.toLowerCase())
     );
+
+    if (makeFilter) {
+      filtered = filtered.filter(v => v.make === makeFilter);
+    }
+
+    if (sortOption === "price") {
+      filtered.sort((a, b) =>
+        parseInt(a.price.replace(/\$|,/g, "")) - parseInt(b.price.replace(/\$|,/g, ""))
+      );
+    } else if (sortOption === "year") {
+      filtered.sort((a, b) => b.year - a.year);
+    }
+
     setResults(filtered);
+  };
+
+  const handleFilterChange = (make: string) => {
+    setMakeFilter(make);
+    handleSearch(""); // reapply filter
+  };
+
+  const handleSortChange = (option: string) => {
+    setSortOption(option);
+    handleSearch(""); // reapply sort
   };
 
   return (
@@ -20,29 +45,8 @@ export default function Home() {
       </h1>
       <SearchBar onSearch={handleSearch} />
 
-      {results.length === 0 ? (
-        <p className="text-center text-gray-600 mt-6">No results found.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          {results.map(v => (
-            <div
-              key={v.id}
-              className="bg-white rounded-lg shadow hover:shadow-lg transition p-4"
-            >
-              <img
-                src={v.image}
-                alt={`${v.make} ${v.model}`}
-                className="w-full h-48 object-cover rounded"
-              />
-              <h2 className="font-bold text-lg mt-2">
-                {v.year} {v.make} {v.model}
-              </h2>
-              <p className="text-gray-600">{v.trim}</p>
-              <p className="text-blue-600 font-semibold">{v.price}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+      {/* Filters */}
+      <div className="flex justify-center gap-4 mt-4">
+        <select
+          onChange={(e) => handleFilterChange(e.target.value)}
+          className="px-4 py-2 border rounded-lg"
