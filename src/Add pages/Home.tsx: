@@ -8,6 +8,8 @@ export default function Home() {
   const [makeFilter, setMakeFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [sortOption, setSortOption] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -16,48 +18,16 @@ export default function Home() {
       `${v.make} ${v.model} ${v.trim}`.toLowerCase().includes(query.toLowerCase())
     )
     .filter(v => (makeFilter ? v.make === makeFilter : true))
-    .filter(v => (yearFilter ? v.year.toString() === yearFilter : true));
+    .filter(v => (yearFilter ? v.year.toString() === yearFilter : true))
+    .filter(v => {
+      const priceNum = parseInt(v.price.replace(/\$|,/g, ""));
+      const min = minPrice ? parseInt(minPrice) : 0;
+      const max = maxPrice ? parseInt(maxPrice) : Infinity;
+      return priceNum >= min && priceNum <= max;
+    });
 
   if (sortOption === "price") {
     filteredVehicles.sort((a, b) =>
       parseInt(a.price.replace(/\$|,/g, "")) - parseInt(b.price.replace(/\$|,/g, ""))
     );
   } else if (sortOption === "year") {
-    filteredVehicles.sort((a, b) => b.year - a.year);
-  }
-
-  const totalPages = Math.ceil(filteredVehicles.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedResults = filteredVehicles.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleSearch = (q: string) => {
-    setQuery(q);
-    setCurrentPage(1);
-  };
-
-  return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600 text-center">
-        EVL Vehicle Locator
-      </h1>
-      <SearchBar onSearch={handleSearch} />
-
-      {/* Filters */}
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
-        <select
-          onChange={(e) => setMakeFilter(e.target.value)}
-          className="px-4 py-2 border rounded-lg"
-        >
-          <option value="">All Makes</option>
-          <option value="Toyota">Toyota</option>
-          <option value="Honda">Honda</option>
-          <option value="Ford">Ford</option>
-          <option value="Tesla">Tesla</option>
-          <option value="BMW">BMW</option>
-          <option value="Mercedes-Benz">Mercedes-Benz</option>
-          <option value="Audi">Audi</option>
-          <option value="Hyundai">Hyundai</option>
-          <option value="Kia">Kia</option>
-        </select>
-
-        <select
