@@ -1,29 +1,33 @@
 
-import { useState } from "react";
+// src/pages/SearchBar.tsx
+import React, { useState } from 'react';
 
-export default function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
-  const [query, setQuery] = useState("");
+interface Props {
+  onSearch: (query: string) => void;
+}
+
+const SearchBar: React.FC<Props> = ({ onSearch }) => {
+  const [input, setInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query);
+    onSearch(input);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-6 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="flex gap-2">
       <input
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Enter make, model, or trim"
-        className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Search cars..."
+        className="border p-2 rounded w-full"
       />
-      <button
-        type="submit"
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-      >
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
         Search
       </button>
     </form>
   );
-}
+};
+
+export default SearchBar;
