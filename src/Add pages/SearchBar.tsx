@@ -1,20 +1,16 @@
 
 import { useState } from "react";
 
-export default function SearchBar() {
+export default function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
   const [query, setQuery] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Searching for: ${query}`);
-    // Later: Replace alert with API call or filter logic
+    onSearch(query);
   };
 
   return (
-    <form
-      onSubmit={handleSearch}
-      className="flex items-center gap-2 mt-6 w-full max-w-md"
-    >
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-6 max-w-md mx-auto">
       <input
         type="text"
         value={query}
