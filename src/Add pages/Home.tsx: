@@ -1,14 +1,17 @@
 
 import { useEffect, useState } from "react";
-import SearchBar from "./SearchBar";
 import { fetchMakes, fetchModels, fetchTrims } from "../services/carApi";
 
 export default function Home() {
   const [makes, setMakes] = useState([]);
   const [models, setModels] = useState([]);
   const [trims, setTrims] = useState([]);
+  const [filteredTrims, setFilteredTrims] = useState([]);
   const [selectedTrim, setSelectedTrim] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [trimSearch, setTrimSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     setLoading(true);
@@ -22,6 +25,7 @@ export default function Home() {
     const makeId = parseInt(e.target.value);
     setModels([]);
     setTrims([]);
+    setFilteredTrims([]);
     setSelectedTrim(null);
     setLoading(true);
     const data = await fetchModels(makeId);
@@ -32,16 +36,30 @@ export default function Home() {
   const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const modelId = parseInt(e.target.value);
     setTrims([]);
+    setFilteredTrims([]);
     setSelectedTrim(null);
     setLoading(true);
     const data = await fetchTrims(modelId);
     setTrims(data);
+    setFilteredTrims(data);
     setLoading(false);
   };
 
   const handleTrimClick = (trim: any) => {
     setSelectedTrim(trim);
   };
+
+  const handleTrimSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setTrimSearch(query);
+    const filtered = trims.filter(t => t.name.toLowerCase().includes(query));
+    setFilteredTrims(filtered);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredTrims.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTrims = filteredTrims.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -70,10 +88,23 @@ export default function Home() {
 
       {loading && <p className="text-center text-gray-500 mt-4">Loading...</p>}
 
+      {/* Trim Search */}
+      {filteredTrims.length > 0 && (
+        <div className="max-w-md mx-auto mt-4">
+          <input
+            type="text"
+            placeholder="Search trims..."
+            value={trimSearch}
+            onChange={handleTrimSearch}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
+        </div>
+      )}
+
       {/* Dynamic Grid of Trims */}
-      {trims.length > 0 && (
+      {paginatedTrims.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          {trims.map(trim => (
+          {paginatedTrims.map(trim => (
             <div
               key={trim.id}
               onClick={() => handleTrimClick(trim)}
@@ -93,6 +124,23 @@ export default function Home() {
               </p>
               <p className="text-gray-500">{trim.body_type || "N/A"}</p>
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 gap-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
           ))}
         </div>
       )}
