@@ -4,38 +4,35 @@ import SearchBar from "./SearchBar";
 import { vehicles } from "../data/vehicles";
 
 export default function Home() {
-  const [results, setResults] = useState(vehicles);
+  const [query, setQuery] = useState("");
   const [makeFilter, setMakeFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
   const [sortOption, setSortOption] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const handleSearch = (query: string) => {
-    let filtered = vehicles.filter(v =>
+  const filteredVehicles = vehicles
+    .filter(v =>
       `${v.make} ${v.model} ${v.trim}`.toLowerCase().includes(query.toLowerCase())
+    )
+    .filter(v => (makeFilter ? v.make === makeFilter : true))
+    .filter(v => (yearFilter ? v.year.toString() === yearFilter : true));
+
+  if (sortOption === "price") {
+    filteredVehicles.sort((a, b) =>
+      parseInt(a.price.replace(/\$|,/g, "")) - parseInt(b.price.replace(/\$|,/g, ""))
     );
+  } else if (sortOption === "year") {
+    filteredVehicles.sort((a, b) => b.year - a.year);
+  }
 
-    if (makeFilter) {
-      filtered = filtered.filter(v => v.make === makeFilter);
-    }
+  const totalPages = Math.ceil(filteredVehicles.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedResults = filteredVehicles.slice(startIndex, startIndex + itemsPerPage);
 
-    if (sortOption === "price") {
-      filtered.sort((a, b) =>
-        parseInt(a.price.replace(/\$|,/g, "")) - parseInt(b.price.replace(/\$|,/g, ""))
-      );
-    } else if (sortOption === "year") {
-      filtered.sort((a, b) => b.year - a.year);
-    }
-
-    setResults(filtered);
-  };
-
-  const handleFilterChange = (make: string) => {
-    setMakeFilter(make);
-    handleSearch(""); // reapply filter
-  };
-
-  const handleSortChange = (option: string) => {
-    setSortOption(option);
-    handleSearch(""); // reapply sort
+  const handleSearch = (q: string) => {
+    setQuery(q);
+    setCurrentPage(1);
   };
 
   return (
@@ -46,7 +43,21 @@ export default function Home() {
       <SearchBar onSearch={handleSearch} />
 
       {/* Filters */}
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
         <select
-          onChange={(e) => handleFilterChange(e.target.value)}
+          onChange={(e) => setMakeFilter(e.target.value)}
           className="px-4 py-2 border rounded-lg"
+        >
+          <option value="">All Makes</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Honda">Honda</option>
+          <option value="Ford">Ford</option>
+          <option value="Tesla">Tesla</option>
+          <option value="BMW">BMW</option>
+          <option value="Mercedes-Benz">Mercedes-Benz</option>
+          <option value="Audi">Audi</option>
+          <option value="Hyundai">Hyundai</option>
+          <option value="Kia">Kia</option>
+        </select>
+
+        <select
