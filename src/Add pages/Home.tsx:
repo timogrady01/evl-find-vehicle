@@ -2,17 +2,14 @@
 import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import { fetchMakes, fetchModels, fetchTrims } from "../services/carApi";
-import { vehicles } from "../data/vehicles";
 
 export default function Home() {
-  const [results, setResults] = useState(vehicles);
   const [makes, setMakes] = useState([]);
   const [models, setModels] = useState([]);
   const [trims, setTrims] = useState([]);
   const [selectedTrim, setSelectedTrim] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // Load makes from CarAPI
   useEffect(() => {
     setLoading(true);
     fetchMakes().then(data => {
@@ -20,13 +17,6 @@ export default function Home() {
       setLoading(false);
     });
   }, []);
-
-  const handleSearch = (query: string) => {
-    const filtered = vehicles.filter(v =>
-      `${v.make} ${v.model} ${v.trim}`.toLowerCase().includes(query.toLowerCase())
-    );
-    setResults(filtered);
-  };
 
   const handleMakeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const makeId = parseInt(e.target.value);
@@ -49,9 +39,7 @@ export default function Home() {
     setLoading(false);
   };
 
-  const handleTrimChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const trimId = parseInt(e.target.value);
-    const trim = trims.find((t: any) => t.id === trimId);
+  const handleTrimClick = (trim: any) => {
     setSelectedTrim(trim);
   };
 
@@ -61,10 +49,7 @@ export default function Home() {
         EVL Vehicle Locator
       </h1>
 
-      {/* Search Bar */}
-      <SearchBar onSearch={handleSearch} />
-
-      {/* Dynamic Dropdowns */}
+      {/* Dropdowns */}
       <div className="flex flex-wrap justify-center gap-4 mt-6">
         <select onChange={handleMakeChange} className="px-4 py-2 border rounded-lg">
           <option value="">Choose Make</option>
@@ -81,18 +66,36 @@ export default function Home() {
             ))}
           </select>
         )}
-
-        {trims.length > 0 && (
-          <select onChange={handleTrimChange} className="px-4 py-2 border rounded-lg">
-            <option value="">Choose Trim</option>
-            {trims.map((trim: any) => (
-              <option key={trim.id} value={trim.id}>{trim.name}</option>
-            ))}
-          </select>
-        )}
       </div>
 
       {loading && <p className="text-center text-gray-500 mt-4">Loading...</p>}
+
+      {/* Dynamic Grid of Trims */}
+      {trims.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          {trims.map(trim => (
+            <div
+              key={trim.id}
+              onClick={() => handleTrimClick(trim)}
+              className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 cursor-pointer"
+            >
+              {trim.image && (
+                <img
+                  src={trim.image}
+                  alt={trim.name}
+                  className="w-full h-48 object-cover rounded mb-2"
+                />
+              )}
+              <h2 className="font-bold text-lg">{trim.name}</h2>
+              <p className="text-gray-600">Year: {trim.year}</p>
+              <p className="text-blue-600 font-semibold">
+                MSRP: {trim.msrp ? `$${trim.msrp}` : "N/A"}
+              </p>
+              <p className="text-gray-500">{trim.body_type || "N/A"}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Vehicle Details Card */}
       {selectedTrim && (
@@ -107,3 +110,17 @@ export default function Home() {
           <h2 className="text-xl font-bold text-blue-600">{selectedTrim.name}</h2>
           <p className="text-gray-700">Year: {selectedTrim.year}</p>
           <p className="text-gray-700">MSRP: {selectedTrim.msrp ? `$${selectedTrim.msrp}` : "N/A"}</p>
+          <p className="text-gray-500">Body: {selectedTrim.body_type || "N/A"}</p>
+          <hr className="my-2" />
+          <h3 className="font-semibold text-gray-800">Specs:</h3>
+          <ul className="text-gray-600 list-disc pl-5">
+            <li>Engine: {selectedTrim.engine || "N/A"}</li>
+            <li>Transmission: {selectedTrim.transmission || "N/A"}</li>
+            <li>Fuel Economy: {selectedTrim.fuel_economy || "N/A"}</li>
+            <li>Drive Type: {selectedTrim.drive_type || "N/A"}</li>
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
