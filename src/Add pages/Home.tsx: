@@ -3,53 +3,13 @@ import React from 'react';
 
 const Home: React.FC = () => {
   return (
-    <div className="bg-gray-100 font-sans min-h-screen">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">EVL Vehicle Finder</h1>
-          <nav className="space-x-6">
-            #Inventory</a>
-            #About</a>
-          </nav>
-        </div>
-      </header>
-
-      {/* Search Section */}
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Find Your Vehicle</h2>
-          <input
-            type="text"
-            placeholder="Search by make, model, or trim"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </section>
-
-      {/* Results Grid */}
-      <section className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          https://via.placeholder.com/400x250
-          <div className="p-4">
-            <h3 className="text-lg font-semibold">2024 Toyota Camry</h3>
-            <p className="text-gray-600">Trim: XSE | Price: $32,000</p>
-            <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-              View Details
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-gray-200 py-6 mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2025 EVL Vehicle Locator. All rights reserved.</p>
-        </div>
-      </footer>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold text-blue-500 mb-4">Find Your Vehicle</h1>
+      <p className="text-gray-600">Your search starts here...</p>
     </div>
   );
 };
 
 export default Home;
+
 
